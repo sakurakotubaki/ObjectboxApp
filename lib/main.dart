@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:object_box_app/object_box.dart';
 import 'package:object_box_app/objectbox.g.dart';
 import 'package:object_box_app/user.dart';
+
+final textProvider = StateProvider.autoDispose((ref) {
+  // riverpodで使うには、('')が必要
+  return TextEditingController(text: '');
+});
 
 /// アプリ全体を通してObjectBox Storeにアクセスできるようにします。
 late ObjectBox objectbox;
@@ -13,7 +19,10 @@ Future<void> main() async {
 
   objectbox = await ObjectBox.create();
 
-  runApp(MyApp());
+  runApp(
+    // Adding ProviderScope enables Riverpod for the entire project
+    const ProviderScope(child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -31,59 +40,43 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class DemoPage extends StatefulWidget {
+class DemoPage extends ConsumerWidget {
   const DemoPage({Key? key}) : super(key: key);
 
   @override
-  State<DemoPage> createState() => _DemoPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // objectboxをインスタンス化して、DBにアクセスできるようにする.
+    final userBox = objectbox.store.box<User>();
+    final controllerProvider = ref.watch(textProvider);
 
-class _DemoPageState extends State<DemoPage> {
-  // objectboxをインスタンス化して、DBにアクセスできるようにする.
-  final userBox = objectbox.store.box<User>();
-
-  final controller = TextEditingController();
-  // DBからtomという名前の人物を検索して表示する.
-  List<User> query() {
-    late final query =
-        (userBox.query(User_.name.equals('tom'))..order(User_.name)).build();
-    final results = query.find();
-    query.close();
-    return results;
-  }
-
-  // 状態を破棄する.
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ObjectBox'),
+        title: const Text('ObjectBoxRiverpod2.1.1'),
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(32),
             child: TextFormField(
-              controller: controller,
+              controller: controllerProvider,
               decoration: InputDecoration(hintText: 'ユーザー名'),
             ),
           ),
           ElevatedButton(
               onPressed: () {
                 // Userクラスのnameプロパティにcontrollerの値を保存する.
-                final user = User(name: controller.text);
+                final user = User(name: controllerProvider.text);
                 // objectboxにデータを保存する.
                 userBox.put(user);
-                // 状態の変更を伝えるのに、setStateを書く.
-                setState(() {});
               },
               child: Text('ユーザーを追加する')),
+          const SizedBox(height: 16),
+          ElevatedButton(
+              onPressed: () {
+                // Userクラスを削除する.
+                userBox.removeAll();
+              },
+              child: Text('ユーザーを削除する')),
           const SizedBox(height: 16),
           const Text('データ全体'),
           Column(
@@ -92,14 +85,6 @@ class _DemoPageState extends State<DemoPage> {
               // 画面に描画する.
               children: userBox
                   .getAll()
-                  .map((e) => Text('ID: ${e.id}, name: ${e.name ?? '名無し'}'))
-                  .toList()),
-          const SizedBox(height: 16),
-          const Text('検索'),
-          Column(
-              // nameがtomだけ画面に描画する.
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: query()
                   .map((e) => Text('ID: ${e.id}, name: ${e.name ?? '名無し'}'))
                   .toList()),
         ],
