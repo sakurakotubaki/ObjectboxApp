@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:object_box_app/object_box.dart';
-import 'package:object_box_app/objectbox.g.dart';
 import 'package:object_box_app/user.dart';
 
 final textProvider = StateProvider.autoDispose((ref) {
   // riverpodで使うには、('')が必要
   return TextEditingController(text: '');
 });
+// objectboxをインスタンス化して、DBにアクセスできるようにするProvider.
+final objectboxProvider = Provider((ref) => objectbox.store.box<User>());
 
 /// アプリ全体を通してObjectBox Storeにアクセスできるようにします。
 late ObjectBox objectbox;
@@ -45,8 +46,7 @@ class DemoPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // objectboxをインスタンス化して、DBにアクセスできるようにする.
-    final userBox = objectbox.store.box<User>();
+    final boxProvider = ref.watch(objectboxProvider);
     final controllerProvider = ref.watch(textProvider);
 
     return Scaffold(
@@ -67,14 +67,14 @@ class DemoPage extends ConsumerWidget {
                 // Userクラスのnameプロパティにcontrollerの値を保存する.
                 final user = User(name: controllerProvider.text);
                 // objectboxにデータを保存する.
-                userBox.put(user);
+                boxProvider.put(user);
               },
               child: Text('ユーザーを追加する')),
           const SizedBox(height: 16),
           ElevatedButton(
               onPressed: () {
                 // Userクラスを削除する.
-                userBox.removeAll();
+                boxProvider.removeAll();
               },
               child: Text('ユーザーを削除する')),
           const SizedBox(height: 16),
@@ -83,7 +83,7 @@ class DemoPage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               // objectboxからデータを取得して、mapメソッドで新しくリストを生成して、
               // 画面に描画する.
-              children: userBox
+              children: boxProvider
                   .getAll()
                   .map((e) => Text('ID: ${e.id}, name: ${e.name ?? '名無し'}'))
                   .toList()),
