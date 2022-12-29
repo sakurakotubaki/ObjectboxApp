@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:object_box_app/object_box.dart';
-import 'package:object_box_app/objectbox.g.dart';
 import 'package:object_box_app/model/user.dart';
 import 'package:object_box_app/service/provider.dart';
 

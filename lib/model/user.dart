@@ -1,4 +1,3 @@
-import 'package:flutter/src/material/list_tile.dart';
 import 'package:objectbox/objectbox.dart';
 
 // ユーザークラスを作成
