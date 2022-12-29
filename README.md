@@ -4,12 +4,12 @@
 ObjectBox は、オブジェクトを保持する超高速のモバイル データベースです。
 多くの反復的なタスクを回避し、データへのシンプルなインターフェイスを提供します。
 
-[objectboxのチュートリアル](https://docs.objectbox.io/getting-started)
-[ビルドランナーのドキュメント](https://pub.dev/packages/build_runner)
-[objectbox](https://pub.dev/packages/objectbox)
-[objectbox_flutter_libs](https://pub.dev/packages/objectbox_flutter_libs)
-[objectbox_generator](https://pub.dev/packages/objectbox_generator)
-[参考にした公式のサンプル](https://github.com/objectbox/objectbox-dart/tree/main/objectbox/example/flutter/event_management_tutorial/event_manager)
+[objectboxのチュートリアル](https://docs.objectbox.io/getting-started)<br>
+[ビルドランナーのドキュメント](https://pub.dev/packages/build_runner)<br>
+[objectbox](https://pub.dev/packages/objectbox)<br>
+[objectbox_flutter_libs](https://pub.dev/packages/objectbox_flutter_libs)<br>
+[objectbox_generator](https://pub.dev/packages/objectbox_generator)<br>
+[参考にした公式のサンプル](https://github.com/objectbox/objectbox-dart/tree/main/objectbox/example/flutter/event_management_tutorial/event_manager)<br>
 
 ビルドランナーでファイルを生成するコマンド.
 もし、modelのファイルを移動したら、関係したファイルのimportしている場所が変化して、
