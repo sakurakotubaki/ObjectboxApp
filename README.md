@@ -20,7 +20,7 @@ flutter pub run build_runner build
 
 ## 今回実装した機能
 1. 追加.
-2. idをして削除.
+2. idを指定して削除.
 3. 全てのデータを削除.
 
 ## 今回使用した技術
